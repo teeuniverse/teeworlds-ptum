@@ -12,6 +12,7 @@
 #include <game/layers.h>
 #include <game/collision.h>
 #include <game/gamecore.h>
+#include <game/animation.h>
 
 CCollision::CCollision()
 {
@@ -19,6 +20,7 @@ CCollision::CCollision()
 	m_Width = 0;
 	m_Height = 0;
 	m_pLayers = 0;
+	m_Time = 0.0;
 }
 
 void CCollision::Init(class CLayers *pLayers)
@@ -289,6 +291,14 @@ inline bool InsideQuad(const vec2& q0, const vec2& q1, const vec2& q2, const vec
 
 /* TEEUNIVERSE END ****************************************************/
 
+static void Rotate(vec2 *pCenter, vec2 *pPoint, float Rotation)
+{
+	float x = pPoint->x - pCenter->x;
+	float y = pPoint->y - pCenter->y;
+	pPoint->x = (x * cosf(Rotation) - y * sinf(Rotation) + pCenter->x);
+	pPoint->y = (x * sinf(Rotation) + y * cosf(Rotation) + pCenter->y);
+}
+
 int CCollision::GetZoneValueAt(int ZoneHandle, float x, float y)
 {
 	if(!m_pLayers->ZoneGroup())
@@ -325,10 +335,27 @@ int CCollision::GetZoneValueAt(int ZoneHandle, float x, float y)
 
 			for(int q = 0; q < pQLayer->m_NumQuads; q++)
 			{
-				vec2 p0(fx2f(pQuads[q].m_aPoints[0].x), fx2f(pQuads[q].m_aPoints[0].y));
-				vec2 p1(fx2f(pQuads[q].m_aPoints[1].x), fx2f(pQuads[q].m_aPoints[1].y));
-				vec2 p2(fx2f(pQuads[q].m_aPoints[2].x), fx2f(pQuads[q].m_aPoints[2].y));
-				vec2 p3(fx2f(pQuads[q].m_aPoints[3].x), fx2f(pQuads[q].m_aPoints[3].y));
+				vec2 Position(0.0f, 0.0f);
+				float Angle = 0.0f;
+				if(pQuads[q].m_PosEnv >= 0)
+				{
+					GetAnimationTransform(m_Time, pQuads[q].m_PosEnv, m_pLayers, Position, Angle);
+				}
+				
+				vec2 p0 = Position + vec2(fx2f(pQuads[q].m_aPoints[0].x), fx2f(pQuads[q].m_aPoints[0].y));
+				vec2 p1 = Position + vec2(fx2f(pQuads[q].m_aPoints[1].x), fx2f(pQuads[q].m_aPoints[1].y));
+				vec2 p2 = Position + vec2(fx2f(pQuads[q].m_aPoints[2].x), fx2f(pQuads[q].m_aPoints[2].y));
+				vec2 p3 = Position + vec2(fx2f(pQuads[q].m_aPoints[3].x), fx2f(pQuads[q].m_aPoints[3].y));
+				
+				if(Angle != 0)
+				{
+					vec2 center(fx2f(pQuads[q].m_aPoints[4].x), fx2f(pQuads[q].m_aPoints[4].y));
+					Rotate(&center, &p0, Angle);
+					Rotate(&center, &p1, Angle);
+					Rotate(&center, &p2, Angle);
+					Rotate(&center, &p3, Angle);
+				}
+				
 				if(InsideQuad(p0, p1, p2, p3, vec2(x, y)))
 				{
 					Index = pQuads[q].m_ColorEnvOffset;

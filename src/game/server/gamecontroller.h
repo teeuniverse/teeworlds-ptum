@@ -144,6 +144,8 @@ public:
 	int ClampTeam(int Team);
 
 	virtual void PostReset();
+	
+	double GetTime();
 };
 
 #endif

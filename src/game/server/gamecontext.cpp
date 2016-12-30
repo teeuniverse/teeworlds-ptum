@@ -408,7 +408,9 @@ void CGameContext::OnTick()
 {
 	// check tuning
 	CheckPureTuning();
-
+	
+	m_Collision.SetTime(m_pController->GetTime());
+	
 	// copy tuning
 	m_World.m_Core.m_Tuning = m_Tuning;
 	m_World.Tick();
@@ -1585,7 +1587,11 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 
 				for(int q = 0; q < pQLayer->m_NumQuads; q++)
 				{
-					vec2 Pos(fx2f(pQuads[q].m_aPoints[4].x), fx2f(pQuads[q].m_aPoints[4].y));
+					vec2 Pos0(fx2f(pQuads[q].m_aPoints[0].x), fx2f(pQuads[q].m_aPoints[0].y));
+					vec2 Pos1(fx2f(pQuads[q].m_aPoints[1].x), fx2f(pQuads[q].m_aPoints[1].y));
+					vec2 Pos2(fx2f(pQuads[q].m_aPoints[2].x), fx2f(pQuads[q].m_aPoints[2].y));
+					vec2 Pos3(fx2f(pQuads[q].m_aPoints[3].x), fx2f(pQuads[q].m_aPoints[3].y));
+					vec2 Pos = (Pos0 + Pos1 + Pos2 + Pos3)/4.0f;
 					m_pController->OnEntity(aLayerName, Pos);
 				}
 			}
