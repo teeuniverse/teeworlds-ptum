@@ -104,7 +104,7 @@ public:
 		Returns:
 			bool?
 	*/
-	virtual bool OnEntity(int Index, vec2 Pos);
+	virtual bool OnEntity(const char* pName, vec2 Pos);
 
 	/*
 		Function: on_CCharacter_spawn

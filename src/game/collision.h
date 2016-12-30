@@ -4,6 +4,7 @@
 #define GAME_COLLISION_H
 
 #include <base/vmath.h>
+#include <base/tl/array.h>
 
 class CCollision
 {
@@ -11,6 +12,8 @@ class CCollision
 	int m_Width;
 	int m_Height;
 	class CLayers *m_pLayers;
+	
+	array< array<int> > m_Zones;
 
 	bool IsTileSolid(int x, int y);
 	int GetTile(int x, int y);
@@ -34,6 +37,10 @@ public:
 	void MovePoint(vec2 *pInoutPos, vec2 *pInoutVel, float Elasticity, int *pBounces);
 	void MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, float Elasticity);
 	bool TestBox(vec2 Pos, vec2 Size);
+	
+	//This function return an Handle to access all zone layers with the name "pName"
+	int GetZoneHandle(const char* pName);
+	int GetZoneValueAt(int ZoneHandle, float x, float y);
 };
 
 #endif

@@ -126,37 +126,37 @@ bool IGameController::CanSpawn(int Team, vec2 *pOutPos)
 }
 
 
-bool IGameController::OnEntity(int Index, vec2 Pos)
+bool IGameController::OnEntity(const char* pName, vec2 Pos)
 {
 	int Type = -1;
 	int SubType = 0;
 
-	if(Index == ENTITY_SPAWN)
+	if(str_comp(pName, "twSpawn") == 0)
 		m_aaSpawnPoints[0][m_aNumSpawnPoints[0]++] = Pos;
-	else if(Index == ENTITY_SPAWN_RED)
+	else if(str_comp(pName, "twSpawnRed") == 0)
 		m_aaSpawnPoints[1][m_aNumSpawnPoints[1]++] = Pos;
-	else if(Index == ENTITY_SPAWN_BLUE)
+	else if(str_comp(pName, "twSpawnBlue") == 0)
 		m_aaSpawnPoints[2][m_aNumSpawnPoints[2]++] = Pos;
-	else if(Index == ENTITY_ARMOR_1)
+	else if(str_comp(pName, "twArmor") == 0)
 		Type = POWERUP_ARMOR;
-	else if(Index == ENTITY_HEALTH_1)
+	else if(str_comp(pName, "twHealth") == 0)
 		Type = POWERUP_HEALTH;
-	else if(Index == ENTITY_WEAPON_SHOTGUN)
+	else if(str_comp(pName, "twShotgun") == 0)
 	{
 		Type = POWERUP_WEAPON;
 		SubType = WEAPON_SHOTGUN;
 	}
-	else if(Index == ENTITY_WEAPON_GRENADE)
+	else if(str_comp(pName, "twGrenade") == 0)
 	{
 		Type = POWERUP_WEAPON;
 		SubType = WEAPON_GRENADE;
 	}
-	else if(Index == ENTITY_WEAPON_RIFLE)
+	else if(str_comp(pName, "twRifle") == 0)
 	{
 		Type = POWERUP_WEAPON;
 		SubType = WEAPON_RIFLE;
 	}
-	else if(Index == ENTITY_POWERUP_NINJA && g_Config.m_SvPowerups)
+	else if(str_comp(pName, "twNinja") == 0 && g_Config.m_SvPowerups)
 	{
 		Type = POWERUP_NINJA;
 		SubType = WEAPON_NINJA;

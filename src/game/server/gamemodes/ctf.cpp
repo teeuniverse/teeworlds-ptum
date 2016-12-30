@@ -19,14 +19,16 @@ CGameControllerCTF::CGameControllerCTF(class CGameContext *pGameServer)
 	m_GameFlags = GAMEFLAG_TEAMS|GAMEFLAG_FLAGS;
 }
 
-bool CGameControllerCTF::OnEntity(int Index, vec2 Pos)
+bool CGameControllerCTF::OnEntity(const char* pName, vec2 Pos)
 {
-	if(IGameController::OnEntity(Index, Pos))
+	if(IGameController::OnEntity(pName, Pos))
 		return true;
 
 	int Team = -1;
-	if(Index == ENTITY_FLAGSTAND_RED) Team = TEAM_RED;
-	if(Index == ENTITY_FLAGSTAND_BLUE) Team = TEAM_BLUE;
+	
+	if(str_comp(pName, "twFlagStandRed") == 0) Team = TEAM_RED;
+	else if(str_comp(pName, "twFlagStandBlue") == 0) Team = TEAM_BLUE;
+	
 	if(Team == -1 || m_apFlags[Team])
 		return false;
 

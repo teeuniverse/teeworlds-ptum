@@ -1484,6 +1484,9 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	m_Layers.Init(Kernel());
 	m_Collision.Init(&m_Layers);
 
+	//Get zones
+	m_ZoneHandle_Death = m_Collision.GetZoneHandle("twDeath");
+
 	// reset everything here
 	//world = new GAMEWORLD;
 	//players = new CPlayer[MAX_CLIENTS];
@@ -1520,11 +1523,71 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 		for(int x = 0; x < pTileMap->m_Width; x++)
 		{
 			int Index = pTiles[y*pTileMap->m_Width+x].m_Index;
-
 			if(Index >= ENTITY_OFFSET)
 			{
 				vec2 Pos(x*32.0f+16.0f, y*32.0f+16.0f);
-				m_pController->OnEntity(Index-ENTITY_OFFSET, Pos);
+				switch(Index - ENTITY_OFFSET)
+				{
+					case ENTITY_SPAWN:
+						m_pController->OnEntity("twSpawn", Pos);
+						break;
+					case ENTITY_SPAWN_RED:
+						m_pController->OnEntity("twSpawnRed", Pos);
+						break;
+					case ENTITY_SPAWN_BLUE:
+						m_pController->OnEntity("twSpawnBlue", Pos);
+						break;
+					case ENTITY_FLAGSTAND_RED:
+						m_pController->OnEntity("twFlagStandRed", Pos);
+						break;
+					case ENTITY_FLAGSTAND_BLUE:
+						m_pController->OnEntity("twFlagStandBlue", Pos);
+						break;
+					case ENTITY_ARMOR_1:
+						m_pController->OnEntity("twArmor", Pos);
+						break;
+					case ENTITY_HEALTH_1:
+						m_pController->OnEntity("twHealth", Pos);
+						break;
+					case ENTITY_WEAPON_SHOTGUN:
+						m_pController->OnEntity("twShotgun", Pos);
+						break;
+					case ENTITY_WEAPON_GRENADE:
+						m_pController->OnEntity("twGrenade", Pos);
+						break;
+					case ENTITY_POWERUP_NINJA:
+						m_pController->OnEntity("twNinja", Pos);
+						break;
+					case ENTITY_WEAPON_RIFLE:
+						m_pController->OnEntity("twRifle", Pos);
+						break;
+				}	
+			}
+		}
+	}
+	
+	// create all entities from entity layers
+	if(m_Layers.EntityGroup())
+	{
+		char aLayerName[12];
+		
+		const CMapItemGroup* pGroup = m_Layers.EntityGroup();
+		for(int l = 0; l < pGroup->m_NumLayers; l++)
+		{
+			CMapItemLayer *pLayer = m_Layers.GetLayer(pGroup->m_StartLayer+l);
+			if(pLayer->m_Type == LAYERTYPE_QUADS)
+			{
+				CMapItemLayerQuads *pQLayer = (CMapItemLayerQuads *)pLayer;
+				
+				IntsToStr(pQLayer->m_aName, sizeof(aLayerName)/sizeof(int), aLayerName);
+				
+				const CQuad *pQuads = (const CQuad *) Kernel()->RequestInterface<IMap>()->GetDataSwapped(pQLayer->m_Data);
+
+				for(int q = 0; q < pQLayer->m_NumQuads; q++)
+				{
+					vec2 Pos(fx2f(pQuads[q].m_aPoints[4].x), fx2f(pQuads[q].m_aPoints[4].y));
+					m_pController->OnEntity(aLayerName, Pos);
+				}
 			}
 		}
 	}
