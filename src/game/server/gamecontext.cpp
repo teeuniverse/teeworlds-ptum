@@ -1487,18 +1487,18 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	m_Collision.Init(&m_Layers);
 
 	//Get zones
-	m_ZoneHandle_Death = m_Collision.GetZoneHandle("twDeath");
+	m_ZoneHandle_TeeWorlds = m_Collision.GetZoneHandle("teeworlds");
 
 	// reset everything here
 	//world = new GAMEWORLD;
 	//players = new CPlayer[MAX_CLIENTS];
 
 	// select gametype
-	if(str_comp(g_Config.m_SvGametype, "mod") == 0)
+	if(str_comp(g_Config.m_SvGametype, "tuMOD") == 0)
 		m_pController = new CGameControllerMOD(this);
-	else if(str_comp(g_Config.m_SvGametype, "ctf") == 0)
+	else if(str_comp(g_Config.m_SvGametype, "tuCTF") == 0)
 		m_pController = new CGameControllerCTF(this);
-	else if(str_comp(g_Config.m_SvGametype, "tdm") == 0)
+	else if(str_comp(g_Config.m_SvGametype, "tuTDM") == 0)
 		m_pController = new CGameControllerTDM(this);
 	else
 		m_pController = new CGameControllerDM(this);
@@ -1527,41 +1527,45 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			int Index = pTiles[y*pTileMap->m_Width+x].m_Index;
 			if(Index >= ENTITY_OFFSET)
 			{
-				vec2 Pos(x*32.0f+16.0f, y*32.0f+16.0f);
+				vec2 Pivot(x*32.0f+16.0f, y*32.0f+16.0f);
+				vec2 P0(x*32.0f, y*32.0f);
+				vec2 P1((x+1)*32.0f, y*32.0f);
+				vec2 P2(x*32.0f, (y+1)*32.0f);
+				vec2 P3((x+1)*32.0f, (y+1)*32.0f);
 				switch(Index - ENTITY_OFFSET)
 				{
 					case ENTITY_SPAWN:
-						m_pController->OnEntity("twSpawn", Pos);
+						m_pController->OnEntity("spawn", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_SPAWN_RED:
-						m_pController->OnEntity("twSpawnRed", Pos);
+						m_pController->OnEntity("spawnRed", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_SPAWN_BLUE:
-						m_pController->OnEntity("twSpawnBlue", Pos);
+						m_pController->OnEntity("spawnBlue", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_FLAGSTAND_RED:
-						m_pController->OnEntity("twFlagStandRed", Pos);
+						m_pController->OnEntity("flagRed", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_FLAGSTAND_BLUE:
-						m_pController->OnEntity("twFlagStandBlue", Pos);
+						m_pController->OnEntity("flagBlue", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_ARMOR_1:
-						m_pController->OnEntity("twArmor", Pos);
+						m_pController->OnEntity("armor", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_HEALTH_1:
-						m_pController->OnEntity("twHealth", Pos);
+						m_pController->OnEntity("health", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_WEAPON_SHOTGUN:
-						m_pController->OnEntity("twShotgun", Pos);
+						m_pController->OnEntity("shotgun", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_WEAPON_GRENADE:
-						m_pController->OnEntity("twGrenade", Pos);
+						m_pController->OnEntity("grenade", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_POWERUP_NINJA:
-						m_pController->OnEntity("twNinja", Pos);
+						m_pController->OnEntity("ninja", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_WEAPON_RIFLE:
-						m_pController->OnEntity("twRifle", Pos);
+						m_pController->OnEntity("rifle", Pivot, P0, P1, P2, P3, -1);
 						break;
 				}	
 			}
@@ -1587,12 +1591,12 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 
 				for(int q = 0; q < pQLayer->m_NumQuads; q++)
 				{
-					vec2 Pos0(fx2f(pQuads[q].m_aPoints[0].x), fx2f(pQuads[q].m_aPoints[0].y));
-					vec2 Pos1(fx2f(pQuads[q].m_aPoints[1].x), fx2f(pQuads[q].m_aPoints[1].y));
-					vec2 Pos2(fx2f(pQuads[q].m_aPoints[2].x), fx2f(pQuads[q].m_aPoints[2].y));
-					vec2 Pos3(fx2f(pQuads[q].m_aPoints[3].x), fx2f(pQuads[q].m_aPoints[3].y));
-					vec2 Pos = (Pos0 + Pos1 + Pos2 + Pos3)/4.0f;
-					m_pController->OnEntity(aLayerName, Pos);
+					vec2 P0(fx2f(pQuads[q].m_aPoints[0].x), fx2f(pQuads[q].m_aPoints[0].y));
+					vec2 P1(fx2f(pQuads[q].m_aPoints[1].x), fx2f(pQuads[q].m_aPoints[1].y));
+					vec2 P2(fx2f(pQuads[q].m_aPoints[2].x), fx2f(pQuads[q].m_aPoints[2].y));
+					vec2 P3(fx2f(pQuads[q].m_aPoints[3].x), fx2f(pQuads[q].m_aPoints[3].y));
+					vec2 Pivot(fx2f(pQuads[q].m_aPoints[4].x), fx2f(pQuads[q].m_aPoints[4].y));
+					m_pController->OnEntity(aLayerName, Pivot, P0, P1, P2, P3, pQuads[q].m_PosEnv);
 				}
 			}
 		}

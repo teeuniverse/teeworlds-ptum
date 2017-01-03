@@ -71,13 +71,14 @@ class CGameContext : public IGameServer
 	bool m_Resetting;
 
 public:
-	int m_ZoneHandle_Death;
+	int m_ZoneHandle_TeeWorlds;
 	
 public:
 	IServer *Server() const { return m_pServer; }
 	class IConsole *Console() { return m_pConsole; }
 	CCollision *Collision() { return &m_Collision; }
 	CTuningParams *Tuning() { return &m_Tuning; }
+	virtual class CLayers *Layers() { return &m_Layers; }
 
 	CGameContext();
 	~CGameContext();

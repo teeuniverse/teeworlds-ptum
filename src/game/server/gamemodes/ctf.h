@@ -16,7 +16,7 @@ public:
 	virtual void Snap(int SnappingClient);
 	virtual void Tick();
 
-	virtual bool OnEntity(const char* pName, vec2 Pos);
+	virtual bool OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv);
 	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
 };
 

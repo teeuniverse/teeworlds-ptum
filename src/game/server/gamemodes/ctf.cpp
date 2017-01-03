@@ -15,19 +15,21 @@ CGameControllerCTF::CGameControllerCTF(class CGameContext *pGameServer)
 {
 	m_apFlags[0] = 0;
 	m_apFlags[1] = 0;
-	m_pGameType = "CTF";
+	m_pGameType = "tuCTF";
 	m_GameFlags = GAMEFLAG_TEAMS|GAMEFLAG_FLAGS;
 }
 
-bool CGameControllerCTF::OnEntity(const char* pName, vec2 Pos)
+bool CGameControllerCTF::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv)
 {
-	if(IGameController::OnEntity(pName, Pos))
+	if(IGameController::OnEntity(pName, Pivot, P0, P1, P2, P3, PosEnv))
 		return true;
 
+	vec2 Pos = (P0 + P1 + P2 + P3)/4.0f;
+	
 	int Team = -1;
 	
-	if(str_comp(pName, "twFlagStandRed") == 0) Team = TEAM_RED;
-	else if(str_comp(pName, "twFlagStandBlue") == 0) Team = TEAM_BLUE;
+	if(str_comp(pName, "flagRed") == 0) Team = TEAM_RED;
+	else if(str_comp(pName, "flagBlue") == 0) Team = TEAM_BLUE;
 	
 	if(Team == -1 || m_apFlags[Team])
 		return false;
